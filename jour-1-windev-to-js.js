@@ -32,16 +32,22 @@ console.log(`Remise : ${remise}%`);
 
 const typeClient = "Fidele";
 let message;
-if(typeClient==="VIP"){
-message = "Livraison gratuite + cadeau";
-  }else if(typeClient==="Fidele"){
+if (typeClient === "VIP") {
+  message = "Livraison gratuite + cadeau";
+} else if (typeClient === "Fidele") {
   message = "Livraison gratuite";
-}else{
-message = "Livraison 500 DA";
+} else {
+  message = "Livraison 500 DA";
 }
 console.log(message);
 
-
+const message2 =
+  typeClient === "VIP"
+    ? "Livraison gratuite + cadeau"
+    : typeClient === "Fidele"
+      ? "Livraison gratuite"
+      : "Livraison 500 DA";
+console.log(message2);
 // ---------- EXO 3 : BOUCLE POUR - total d'un tableau ----------
 // Windev :
 //   total = 0
@@ -83,7 +89,7 @@ for (const produit of produits) {
 // Traduis avec while.
 
 let i = 1;
-while(i <= 5){
+while (i <= 5) {
   console.log(`Facture N° ${i}`);
   i++;
 }
@@ -113,7 +119,7 @@ console.log(`Facture N° ${numero} : ${total} DA ${client}`);
 // En JS, extrais nom et tel en UNE ligne avec { }.
 
 const monClient = { nom: "Amine Benali", tel: "0550 12 34 56", wilaya: "Oran" };
-// TODO exo 8 (affiche : Amine Benali - 0550 12 34 56) :  
+// TODO exo 8 (affiche : Amine Benali - 0550 12 34 56) :
 const { nom, tel } = monClient;
 console.log(`${nom} - ${tel}`);
 // ---------- EXO 9 : Spread - copier sans modifier (BASE DE REACT) ----------
@@ -121,7 +127,7 @@ console.log(`${nom} - ${tel}`);
 // Crée un NOUVEAU tableau avec "Chargeur" en plus, sans toucher l'original.
 // Affiche les 2 tableaux pour prouver que l'original n'a pas changé.
 
-const panier = ["PC", "Souris"]
+const panier = ["PC", "Souris"];
 // TODO exo 9 : const nouveauPanier = [...panier, "Chargeur"];
 const nouveauPanier = [...panier, "Chargeur"];
 console.log(nouveauPanier);
@@ -137,8 +143,11 @@ const lignes = [
   { designation: "Souris", prix: 1800, quantite: 5 },
   { designation: "Tapis", prix: 600, quantite: 5 },
 ];
-// TODO exo 10 :          
-const totalPanier = lignes.reduce((acc, ligne) => acc + ligne.prix * ligne.quantite, 0);
+// TODO exo 10 :
+const totalPanier = lignes.reduce(
+  (acc, ligne) => acc + ligne.prix * ligne.quantite,
+  0,
+);
 console.log(`Total = ${totalPanier}`);
 
 /* ============================================================
