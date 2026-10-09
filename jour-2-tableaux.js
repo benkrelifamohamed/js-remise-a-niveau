@@ -164,8 +164,9 @@ console.log(`Reçu : ${impayésRecues.length} factures`);
 // Équivalent Windev : SELECT wilaya, SUM(montant) GROUP BY wilaya.
 // Avec .reduce, construis : { Alger: 260000, Oran: 218500, ... } (totaux HT).
 // Attendu : Alger = 260000 | Oran = 218500 | Sétif = 52500 | Blida = 15000
+
 const totauxParWilaya = factures.reduce((acc, f) => {
-  acc[f.wilaya] = (acc[f.wilaya] || 0) + f.montantHT;
+  acc[f.wilaya] =(acc[f.wilaya]||0) + f.montantHT;
   return acc;
 }, {});
 console.log("9 - totaux HT par wilaya :", totauxParWilaya);
