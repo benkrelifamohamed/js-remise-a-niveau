@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Les 58 Wilayas 🇩🇿 — Jour 4</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f1f5f9;
+        color: #1e293b;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 640px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        color: #1e40af;
+        margin-top: 0;
+        font-size: 1.5em;
+      }
+      h2 {
+        color: #1e3a8a;
+        font-size: 1.1em;
+        border-bottom: 2px solid #dbeafe;
+        padding-bottom: 4px;
+      }
+      #recherche {
+        width: 100%;
+        padding: 12px;
+        font-size: 1em;
+        border: 2px solid #93c5fd;
+        border-radius: 8px;
+      }
+      #recherche:focus {
+        outline: none;
+        border-color: #1d4ed8;
+      }
+      #compteur {
+        color: #64748b;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        margin-bottom: 6px;
+        cursor: pointer;
+      }
+      li:hover {
+        background: #eff6ff;
+        border-color: #93c5fd;
+      }
+      li.fav {
+        background: #fef9c3;
+        border-color: #eab308;
+      }
+      .code {
+        display: inline-block;
+        background: #1e40af;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 6px;
+        padding: 1px 8px;
+        margin-right: 8px;
+        font-size: 0.85em;
+      }
+      .erreur {
+        color: #dc2626;
+        font-weight: bold;
+      }
+      .astuce {
+        background: #eff6ff;
+        border: 1px solid #93c5fd;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 0.9em;
+        color: #1e3a8a;
+      }
+      .btns {
+        margin: 10px 0;
+      }
+      .btns button {
+        padding: 8px 14px;
+        margin-right: 8px;
+        border: 1px solid #93c5fd;
+        background: #eff6ff;
+        color: #1e40af;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .btns button:hover {
+        background: #dbeafe;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Les 58 Wilayas d'Algérie 🇩🇿</h1>
+      <p class="astuce">
+        Clique sur une wilaya pour l'ajouter à tes favoris ⭐ (sauvegardés même
+        après fermeture du navigateur !)
+      </p>
+      <input
+        type="text"
+        id="recherche"
+        placeholder="Rechercher... (ex : oran, alger, s...)"
+        autocomplete="off"
+      />
+      <p id="compteur">Chargement...</p>
+
+      <h2>Mes favoris ⭐ <span id="nb-favoris"></span></h2>
+      <ul id="favoris"></ul>
+
+      <h2>Toutes les wilayas</h2>
+      <div class="btns" id="zone-boutons">
+        <!-- TODO exo 4 : ajoute ici 2 boutons Tri A-Z / Tri par code -->
+      </div>
+      <ul id="liste"></ul>
+      <p id="erreur" class="erreur"></p>
+    </div>
+
+    <script>
+      // URL de la source des données : elle contient les 58 wilayas d'Algérie.
+      // On va utiliser cette URL pour faire un fetch() puis récupérer le JSON.
+      const API_WILAYAS =
+        "https://raw.githubusercontent.com/lamaridev/Algeria-wilaya-cities/master/wilaya.json";
+
+      // Tableau vide au départ : il recevra les wilayas chargées depuis l'API.
+      // Chaque élément aura un champ code ajouté plus tard : 1, 2, 3, ..., 58.
+      let wilayas = [];
+
+      // Tableau des codes favoris, par exemple : [16, 31, 48].
+      // Il est sauvegardé dans le navigateur avec localStorage pour rester persistant.
+      let favoris = [];
+
+      // ---------- EXO 1 : charger les données ----------
+      // Cette fonction envoie une requête HTTP vers l'URL de l'API.
+      // Ensuite, elle transforme la réponse JSON en tableau JavaScript.
+      // Enfin, elle ajoute un code à chaque wilaya avant d'afficher la liste.
+      async function charger() {
+        try {
+          // await fetch(API_WILAYAS) : on attend la réponse du serveur.
+          const res = await fetch(API_WILAYAS);
+
+          // Si la réponse HTTP n'est pas OK (ex: 404, 500), on lève une erreur.
+          if (!res.ok) {
+            throw new Error("Erreur HTTP " + res.status);
+          }
+
+          // On récupère les données JSON envoyées par l'API.
+          const data = await res.json();
+
+          // On transforme chaque objet en ajoutant un code = index + 1.
+          // Exemple : { nom_fr: "Oran" } devient { nom_fr: "Oran", code: 31 }.
+          wilayas = data.map((w, i) => ({ ...w, code: i + 1 }));
+
+          // On affiche la liste complète des wilayas dans le navigateur.
+          afficher(wilayas);
+        } catch (err) {
+          // Si une erreur arrive pendant fetch ou json(), on affiche le message dans #erreur.
+          document.querySelector("#erreur").textContent =
+            "Problème : " + err.message;
+        }
+      }
+
+      // ---------- EXO 2 : afficher + recherche instantanée ----------
+      // Cette fonction reçoit un tableau de wilayas et construit les éléments HTML <li>.
+      // Chaque élément affichera : code + nom de la wilaya.
+      function afficher(liste) {
+        // On récupère la liste HTML et le compteur affiché dans la page.
+        const ul = document.querySelector("#liste");
+        const compteur = document.querySelector("#compteur");
+
+        // On vide ce qui est déjà affiché dans la liste pour ne pas ajouter en double.
+        ul.innerHTML = "";
+
+        // On met à jour le texte du compteur avec le nombre d'éléments de la liste.
+        compteur.textContent = `${liste.length} wilaya(s) affichée(s)`;
+
+        // Pour chaque wilaya, on crée un <li> avec son code et son nom.
+        liste.forEach((wilaya) => {
+          // On crée une balise <li> qui représentera une wilaya.
+          const li = document.createElement("li");
+
+          // Si la wilaya est dans les favoris, on ajoute la classe CSS "fav" pour la mettre en jaune.
+          if (favoris.includes(wilaya.code)) {
+            li.classList.add("fav");
+          }
+
+          // On crée un petit badge avec le code de la wilaya.
+          const badge = document.createElement("span");
+          badge.className = "code";
+          badge.textContent = wilaya.code;
+
+          // On crée le texte du nom de la wilaya.
+          const nom = document.createTextNode(` ${wilaya.nom_fr}`);
+
+          // On ajoute le badge et le nom dans le <li>.
+          li.appendChild(badge);
+          li.appendChild(nom);
+
+          // Quand on clique sur la wilaya, on bascule son état favori.
+          li.addEventListener("click", () => basculerFavori(wilaya.code));
+
+          // On ajoute ce <li> dans la liste principale.
+          ul.appendChild(li);
+        });
+      }
+
+      // On écoute l'événement input sur le champ de recherche.
+      // À chaque frappe, on filtre les wilayas selon le texte saisi.
+      document
+        .querySelector("#recherche")
+        .addEventListener("input", (event) => {
+          // On récupère la valeur du champ et on la met en minuscule pour une recherche insensible à la casse.
+          const terme = event.target.value.trim().toLowerCase();
+
+          // On garde uniquement les wilayas dont le nom contient le terme recherché.
+          const resultats = wilayas.filter((wilaya) =>
+            wilaya.nom_fr.toLowerCase().includes(terme),
+          );
+
+          // On affiche les wilayas trouvées.
+          afficher(resultats);
+        });
+
+      // ---------- EXO 3 : favoris + localStorage ----------
+      // Cette fonction ajoute ou retire une wilaya des favoris.
+      function basculerFavori(code) {
+        // Si le code existe déjà dans favoris, on le retire.
+        if (favoris.includes(code)) {
+          favoris = favoris.filter((item) => item !== code);
+        } else {
+          // Sinon, on l'ajoute à la fin du tableau.
+          favoris.push(code);
+        }
+
+        // On enregistre le tableau des favoris dans le navigateur.
+        localStorage.setItem("favoris", JSON.stringify(favoris));
+
+        // On récupère le terme de recherche actuel pour garder la liste filtrée.
+        const recherche = document
+          .querySelector("#recherche")
+          .value.trim()
+          .toLowerCase();
+
+        // On applique de nouveau le filtre selon la recherche en cours.
+        const listeCourante = wilayas.filter((wilaya) =>
+          wilaya.nom_fr.toLowerCase().includes(recherche),
+        );
+
+        // On réaffiche la liste mise à jour avec les favoris modifiés.
+        afficher(listeCourante);
+
+        // On réaffiche aussi la section des favoris.
+        afficherFavoris();
+      }
+
+      // Cette fonction affiche les wilayas favorites dans le bloc "Mes favoris".
+      function afficherFavoris() {
+        // On récupère l'élément HTML de la liste des favoris et son compteur.
+        const ulFavoris = document.querySelector("#favoris");
+        const compteurFavoris = document.querySelector("#nb-favoris");
+
+        // On garde seulement les wilayas dont le code est dans le tableau favoris.
+        const listeFavoris = wilayas.filter((wilaya) =>
+          favoris.includes(wilaya.code),
+        );
+
+        // On affiche le nombre de favoris entre parenthèses.
+        compteurFavoris.textContent = `(${listeFavoris.length})`;
+
+        // On vide la liste des favoris avant de réécrire l'affichage.
+        ulFavoris.innerHTML = "";
+
+        // Si aucun favori n'existe, on affiche un message explicite.
+        if (listeFavoris.length === 0) {
+          const li = document.createElement("li");
+          li.textContent = "Aucun favori pour l'instant.";
+          ulFavoris.appendChild(li);
+          return;
+        }
+
+        // Sinon, on affiche chaque favori dans une balise <li>.
+        listeFavoris.forEach((wilaya) => {
+          const li = document.createElement("li");
+          li.classList.add("fav");
+          li.textContent = `${wilaya.code} - ${wilaya.nom_fr}`;
+
+          // Clique sur un favori pour le retirer.
+          li.addEventListener("click", () => basculerFavori(wilaya.code));
+
+          // On ajoute le favori dans la liste.
+          ulFavoris.appendChild(li);
+        });
+      }
+
+      // ---------- EXO 4 : tri A-Z / tri par code ----------
+      // On récupère la zone où les boutons seront créés.
+      const zoneBoutons = document.querySelector("#zone-boutons");
+
+      // Bouton pour trier les wilayas par ordre alphabétique.
+      const btnTriAZ = document.createElement("button");
+      btnTriAZ.textContent = "Tri A-Z";
+
+      // Quand on clique dessus, on trie les résultats de la recherche par ordre alphabétique.
+      btnTriAZ.addEventListener("click", () => {
+        // On récupère la recherche actuelle pour trier seulement les résultats visibles.
+        const terme = document
+          .querySelector("#recherche")
+          .value.trim()
+          .toLowerCase();
+
+        // Copie du tableau pour ne pas modifier le tableau original.
+        const resultats = [...wilayas]
+          .filter((wilaya) => wilaya.nom_fr.toLowerCase().includes(terme))
+          .sort((a, b) => a.nom_fr.localeCompare(b.nom_fr, "fr"));
+
+        // On affiche la liste triée.
+        afficher(resultats);
+      });
+
+      // Bouton pour trier les wilayas par numéro de code croissant.
+      const btnTriCode = document.createElement("button");
+      btnTriCode.textContent = "Tri par code";
+
+      // Quand on clique dessus, on trie les résultats par code.
+      btnTriCode.addEventListener("click", () => {
+        const terme = document
+          .querySelector("#recherche")
+          .value.trim()
+          .toLowerCase();
+
+        const resultats = [...wilayas]
+          .filter((wilaya) => wilaya.nom_fr.toLowerCase().includes(terme))
+          .sort((a, b) => a.code - b.code);
+
+        afficher(resultats);
+      });
+
+      // On ajoute les deux boutons dans la zone prévue.
+      zoneBoutons.appendChild(btnTriAZ);
+      zoneBoutons.appendChild(btnTriCode);
+
+      // Fonction principale appelée au chargement de la page.
+      async function main() {
+        try {
+          // On lit les favoris enregistrés dans le navigateur.
+          favoris = JSON.parse(localStorage.getItem("favoris") || "[]");
+
+          // On affiche le nombre de wilayas dans la console (debug).
+          console.log("Wilayas reçues :", wilayas.length);
+
+          // On charge les données de l'API.
+          await charger();
+
+          // On affiche les favoris déjà enregistrés.
+          afficherFavoris();
+        } catch (err) {
+          // Si une erreur apparaît au démarrage, on l'affiche à l'utilisateur.
+          document.querySelector("#erreur").textContent =
+            "Problème : " + err.message;
+        }
+      }
+
+      // On lance l'application dès le chargement du script.
+      main();
+    </script>
+  </body>
+</html>

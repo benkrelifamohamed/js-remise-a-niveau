@@ -113,7 +113,7 @@ const numero = 1024,
   total = 23800,
   client = "SARL Numidia";
 // TODO exo 7 (attendu : Facture 1024 : 23800 DA (SARL Numidia)) :
-console.log(`Facture N° ${numero} : ${total} DA ${client}`);
+console.log(`Facture ${numero} : ${total} DA (${client})`);
 // ---------- EXO 8 : Destructuring - extraire d'un objet ----------
 // Windev : nom = MonClient.Nom ; tel = MonClient.Tel
 // En JS, extrais nom et tel en UNE ligne avec { }.

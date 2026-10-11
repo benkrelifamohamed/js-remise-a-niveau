@@ -85,10 +85,8 @@ console.table(impayés);
 // Trouve LA facture du client "Pharmacie El Nour" (un seul objet).
 // Attendu : { id: 5, ... } → affiche `Trouvée : facture N°5 - 15000 DA`
 // TODO exo 3 :
-const factureclient = factures.find((f) => f.client == "Pharmacie El Nour");
-console.log(
-  `trouvée : Facture N° ${factureclient.id} - ${factureclient.montantHT} DA pour ${factureclient.client}  `,
-);
+const factureclient = factures.find((f) => f.client === "Pharmacie El Nour");
+console.log(`Trouvée : facture N°${factureclient.id} - ${factureclient.montantHT} DA`);
 
 // ---------- EXO 4 : reduce (agréger = SUM) ----------
 // Calcule avec .reduce : (a) le CA total HT, (b) le total des impayés HT.
@@ -125,16 +123,16 @@ console.log(
 for (const f of factures) {
   if (f.montantHT > 100000) {
     some = true;
-    //return true;
+    
   }
 }
 for (const f of factures) {
   if (!f.payee) {
     every = false;
-    // return false;
+   
   }
 }
-//return true;
+
 console.log("6a - Y a-t-il AU MOINS une facture > 100000 ? :", some);
 console.log("6b - TOUTES les factures sont-elles payées ? :", every);
 
@@ -148,8 +146,8 @@ factures
   .filter((f) => !f.payee)
   .sort((a,b) => b.montantHT - a.montantHT)
   .slice(0,2)
-  //.forEach((f) => console.log(`${f.client} : ${f.montantHT} DA`));
-  .map((f) => `${f.client} : ${f.montantHT} DA`)
+  .forEach((f) => console.log(`${f.client} : ${f.montantHT} DA`));
+  
 
 // ---------- EXO 8 : JSON (parler aux API) ----------
 // 8a. Transforme les impayées en texte JSON (JSON.stringify), affiche.

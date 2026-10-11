@@ -107,6 +107,7 @@ async function exo6() {
 // 7a. Récupère API_WILAYAS (tableau de { nom_fr, nom_ar }), affiche le nombre.
 // 7b. TROUVE "Oran" et affiche son code (= index + 1, car pas de champ code).
 // Attendu : "58 wilayas chargées" + "Oran = wilaya N°31"
+
 async function exo7() {
   const res = await fetch(API_WILAYAS); // GET le JSON des wilayas
   const wilayas = await res.json(); // tableau [{ nom_fr, nom_ar }, ...]
