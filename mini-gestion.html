@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini gestion — Clients et factures</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f1f5f9;
+        color: #1e293b;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        color: #1e40af;
+        margin-top: 0;
+        font-size: 1.5em;
+      }
+      h2 {
+        color: #1e3a8a;
+        font-size: 1.1em;
+        border-bottom: 2px solid #dbeafe;
+        padding-bottom: 6px;
+      }
+      section + section {
+        margin-top: 28px;
+      }
+      label {
+        display: block;
+        margin: 12px 0 6px;
+        font-weight: 600;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        font: inherit;
+        border: 2px solid #93c5fd;
+        border-radius: 8px;
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #1d4ed8;
+      }
+      .checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .checkbox input {
+        width: auto;
+      }
+      button {
+        margin-top: 14px;
+        padding: 9px 14px;
+        border: 1px solid #93c5fd;
+        background: #eff6ff;
+        color: #1e40af;
+        font: inherit;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #dbeafe;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        min-height: 8px;
+      }
+      li {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <!-- Ferme l'en-tête du document. -->
+  <body>
+    <!-- Ouvre le corps du document, la partie visible de la page. -->
+    <main class="container">
+      <!-- Conteneur principal de la page, utilisé pour organiser les sections. -->
+      <h1>Mini gestion</h1>
+      <!-- Titre principal de l'application. -->
+      <div id="stats"></div>
+      <!-- Zone vide destinée à afficher des statistiques dynamiques. -->
+
+      <section aria-labelledby="titre-clients">
+        <!-- Section des clients avec une description accessible pour les lecteurs d'écran. -->
+        <h2 id="titre-clients">Clients</h2>
+        <!-- Sous-titre de la section client. -->
+        <label for="nom-client">Nom</label>
+        <!-- Libellé du champ de saisie du nom du client. -->
+        <input type="text" id="nom-client" />
+        <!-- Champ pour entrer le nom du client. -->
+
+        <label for="tel-client">Téléphone</label>
+        <!-- Libellé du champ téléphone. -->
+        <input type="tel" id="tel-client" />
+        <!-- Champ numérique pour le téléphone du client. -->
+
+        <label for="wilaya-client">Wilaya</label>
+        <!-- Libellé pour la wilaya. -->
+        <input type="text" id="wilaya-client" />
+        <!-- Champ pour entrer la wilaya du client. -->
+
+        <button type="button" id="btn-ajouter-client">Ajouter le client</button>
+        <!-- Bouton qui ajoute un nouveau client dans la liste. -->
+
+        <label for="recherche-client">Rechercher un client</label>
+        <!-- Libellé du champ de recherche de client. -->
+        <input type="search" id="recherche-client" />
+        <!-- Champ de recherche qui filtre les clients. -->
+        <ul id="liste-clients"></ul>
+        <!-- Liste vide qui contiendra les clients affichés. -->
+      </section>
+      <!-- Ferme la section des clients. -->
+
+      <section aria-labelledby="titre-factures">
+        <!-- Section des factures avec un titre accessible. -->
+        <h2 id="titre-factures">Factures</h2>
+        <!-- Sous-titre de la section facture. -->
+        <label for="select-client">Client</label>
+        <!-- Libellé pour le menu déroulant des clients. -->
+        <select id="select-client">
+          <!-- Liste déroulante permettant de choisir un client pour une facture. -->
+          <option value="">Choisir un client</option>
+          <!-- Option par défaut indiquant qu'aucun client n'est sélectionné. -->
+        </select>
+        <!-- Ferme la liste déroulante. -->
+
+        <label for="montant-facture">Montant</label>
+        <!-- Libellé pour le montant de la facture. -->
+        <input type="number" id="montant-facture" min="0" step="0.01" />
+        <!-- Champ numérique pour saisir le montant avec 2 décimales. -->
+
+        <label class="checkbox" for="payee-facture">
+          <!-- Libellé du bouton à cocher indiquant si la facture est payée. -->
+          <input type="checkbox" id="payee-facture" />
+          <!-- Case à cocher qui indique l'état payé/non payé. -->
+          Facture payée
+          <!-- Texte affiché à côté de la case. -->
+        </label>
+        <!-- Ferme le label de la case à cocher. -->
+
+        <button type="button" id="btn-ajouter-facture">
+          <!-- Bouton pour ajouter une facture. -->
+          Ajouter la facture
+          <!-- Texte visible du bouton. -->
+        </button>
+        <!-- Ferme le bouton. -->
+        <ul id="liste-factures"></ul>
+        <!-- Liste vide qui contiendra les factures affichées. -->
+      </section>
+      <!-- Ferme la section des factures. -->
+    </main>
+    <!-- Ferme le conteneur principal. -->
+  </body>
+  <!-- Ferme le corps du document. -->
+  <script>
+    <!-- Ouvre une balise script pour écrire le JavaScript de la page. -->
+    let clients = []; // Initialise une variable contenant la liste des clients sous forme de tableau vide.
+    let factures = []; // Initialise une variable contenant la liste des factures sous forme de tableau vide.
+    let clientActif = ""; // Stocke l'identifiant du client actuellement sélectionné dans le menu déroulant.
+
+    function remplirSelectClients() {
+      // Remplit le <select> avec les clients disponibles.
+      const select = document.querySelector("#select-client"); // Sélectionne le menu déroulant des clients.
+      select.innerHTML = '<option value="">Choisir un client</option>'; // Vide le select et remet l'option par défaut.
+
+      if (!clientActif && clients.length > 0) {
+        // Si aucun client n'est sélectionné, on prend le premier client par défaut.
+        clientActif = String(clients[0].id); // Sélectionne automatiquement le premier client.
+      }
+
+      for (const client of clients) {
+        // Parcourt tous les clients pour créer une option dans le select.
+        const option = document.createElement("option"); // Crée une balise <option> pour un client.
+        option.value = String(client.id); // Associe l'identifiant du client à la valeur de l'option.
+        option.textContent = client.nom; // Affiche le nom du client dans le menu.
+
+        if (String(clientActif) === String(client.id)) {
+          // Garde la sélection actuelle si ce client est toujours présent.
+          option.selected = true; // Sélectionne l'option correspondante.
+        }
+
+        select.append(option); // Ajoute l'option au menu déroulant.
+      }
+
+      if (
+        clientActif &&
+        !clients.some((client) => String(client.id) === String(clientActif))
+      ) {
+        // Si le client actif a été supprimé, on remet le select à vide.
+        clientActif = ""; // Réinitialise l'identifiant sélectionné.
+      }
+
+      select.value = clientActif ? String(clientActif) : ""; // Applique la valeur actuelle dans le select.
+    }
+
+    function afficherClients() {
+      // Déclare une fonction qui affiche les clients dans la liste HTML.
+      const liste = document.querySelector("#liste-clients"); // Sélectionne l'élément HTML de la liste des clients.
+      liste.innerHTML = ""; // Vide le contenu précédent de la liste avant de la reconstruire.
+
+      for (const client of clients) {
+        // Parcourt chaque client du tableau clients.
+        const li = document.createElement("li"); // Crée un élément <li> pour représenter un client.
+        const texte = document.createElement("span"); // Crée un conteneur <span> pour afficher le texte du client.
+        texte.textContent = `${client.nom} — ${client.tel} — ${client.wilaya}`; // Met le nom, téléphone et wilaya du client dans le texte.
+
+        const boutonSupprimer = document.createElement("button"); // Crée un bouton pour supprimer un client.
+        boutonSupprimer.type = "button"; // Le bouton n'enverra pas de formulaire.
+        boutonSupprimer.textContent = "Supprimer"; // Texte visible sur le bouton.
+        boutonSupprimer.addEventListener("click", () => {
+          // Ajoute un événement au clic pour supprimer le client.
+          clients = clients.filter((element) => element.id !== client.id); // Supprime le client dont l'id correspond à celui sélectionné.
+          factures = factures.filter(
+            (element) => element.clientId !== client.id,
+          ); // Supprime toutes les factures associées à ce client.
+          sauver(); // Enregistre les données mises à jour dans le stockage local.
+          afficherClients(); // Rafraîchit l'affichage de la liste après suppression.
+          remplirSelectClients(); // Met à jour le menu déroulant des clients après suppression.
+          afficherFactures(); // Rafraîchit les factures affichées pour le client sélectionné.
+        });
+
+        li.append(texte, " ", boutonSupprimer); // Ajoute le texte et le bouton dans le <li>.
+        liste.append(li); // Ajoute le <li> dans la liste HTML.
+      }
+    }
+
+    function afficherFactures() {
+      // Affiche uniquement les factures du client sélectionné.
+      const liste = document.querySelector("#liste-factures"); // Sélectionne la liste des factures.
+      liste.innerHTML = ""; // Vide la liste avant de la reconstruire.
+
+      const facturesClient = factures.filter(
+        (facture) => String(facture.clientId) === String(clientActif),
+      ); // Filtre les factures du client actuellement sélectionné.
+
+      for (const facture of facturesClient) {
+        // Parcourt chaque facture du client actuel.
+        const li = document.createElement("li"); // Crée un élément <li> pour une facture.
+        const montantTtc = Math.round(facture.montant * 1.19); // Calcule le TTC avec un arrondi à l'entier, sans virgule de centimes.
+        li.textContent = `N°${facture.id} — HT : ${facture.montant} DA — TTC : ${montantTtc} DA — ${facture.payee ? "Payée" : "Impayée"}`; // Affiche les infos de la facture.
+        liste.append(li); // Ajoute la facture à la liste visible.
+      }
+    }
+
+    function afficherStats() {
+      // Calcule et affiche les statistiques globales de la gestion.
+      const stats = document.querySelector("#stats"); // Sélectionne la zone d'affichage des statistiques.
+      const totalTtc = factures.reduce(
+        (total, facture) => total + Math.round(facture.montant * 1.19),
+        0,
+      ); // Calcule le chiffre d'affaires total TTC sur toutes les factures.
+      const nbClients = clients.length; // Compte le nombre total de clients.
+      const nbImpayees = factures.filter((facture) => !facture.payee).length; // Compte les factures non payées.
+
+      stats.innerHTML = `
+        <p>CA total TTC : ${totalTtc} DA</p>
+        <p>Clients : ${nbClients}</p>
+        <p>Factures impayées : ${nbImpayees}</p>
+      `; // Affiche les statistiques dans la zone prévue.
+    }
+
+    function sauver() {
+      // Déclare une fonction pour sauvegarder les clients et factures dans le localStorage.
+      localStorage.setItem("mg_clients", JSON.stringify(clients)); // Stocke la liste des clients au format JSON sous la clé "mg_clients".
+      localStorage.setItem("mg_factures", JSON.stringify(factures)); // Stocke la liste des factures au format JSON sous la clé "mg_factures".
+    }
+
+    function chargerDonnees() {
+      // Déclare une fonction qui charge les données depuis le localStorage.
+      clients = JSON.parse(localStorage.getItem("mg_clients") || "[]"); // Lit la liste des clients ou met un tableau vide si rien n'existe.
+      factures = JSON.parse(localStorage.getItem("mg_factures") || "[]"); // Lit la liste des factures ou met un tableau vide si rien n'existe.
+
+      if (clients.length === 0 && factures.length === 0) {
+        // Vérifie si les données sont absentes pour charger des données de démonstration.
+        clients = [
+          // Remplace les tableaux vides par des clients d'exemple.
+          { id: 1, nom: "Amine Benali", tel: "0550123456", wilaya: "Alger" }, // Premier client d'exemple avec son identifiant, nom, téléphone et wilaya.
+          { id: 2, nom: "Sara Haddad", tel: "0661234567", wilaya: "Oran" }, // Deuxième client d'exemple.
+          { id: 3, nom: "Yacine Merabet", tel: "0772345678", wilaya: "Blida" }, // Troisième client d'exemple.
+        ];
+        factures = [
+          // Remplace le tableau des factures par des factures d'exemple.
+          { id: 1, clientId: 1, montant: 12000, payee: true }, // Première facture payée pour le client 1.
+          { id: 2, clientId: 2, montant: 8500, payee: false }, // Deuxième facture non payée pour le client 2.
+          { id: 3, clientId: 3, montant: 15000, payee: true }, // Troisième facture payée pour le client 3.
+          { id: 4, clientId: 1, montant: 4200, payee: false }, // Quatrième facture non payée pour le client 1.
+        ];
+      }
+
+      sauver(); // Enregistre les données chargées ou générées dans le localStorage.
+      afficherClients(); // Affiche les clients à l'écran.
+      remplirSelectClients(); // Remplit le menu déroulant avec les clients disponibles.
+      afficherFactures(); // Affiche les factures du client actuel au chargement.
+      afficherStats(); // Affiche les statistiques globales au chargement.
+    }
+
+    chargerDonnees(); // Appelle immédiatement la fonction de chargement au démarrage de la page.
+
+    document
+      .querySelector("#select-client")
+      .addEventListener("change", (event) => {
+        // Met à jour l'identifiant du client actif quand l'utilisateur change le choix du select.
+        clientActif = event.target.value; // Stocke la valeur sélectionnée du select.
+        afficherFactures(); // Affiche les factures du client sélectionné.
+        afficherStats(); // Met à jour les statistiques globales après un changement de client.
+      });
+
+    document
+      .querySelector("#btn-ajouter-client")
+      .addEventListener("click", () => {
+        // Écoute le clic sur le bouton d'ajout du client.
+        const nom = document.querySelector("#nom-client").value.trim(); // Lit le nom saisi et enlève les espaces en trop.
+        const tel = document.querySelector("#tel-client").value.trim(); // Lit le téléphone saisi et enlève les espaces en trop.
+        const wilaya = document.querySelector("#wilaya-client").value.trim(); // Lit la wilaya saisie et enlève les espaces en trop.
+
+        if (!nom) {
+          // Empêche l'ajout si le nom est vide.
+          alert("Le nom du client est obligatoire."); // Affiche un message pour informer l'utilisateur.
+          return; // Arrête immédiatement l'exécution.
+        }
+
+        clients.push({
+          // Ajoute un nouveau client dans le tableau.
+          id: Date.now(), // Génère un identifiant unique avec l'horodatage actuel.
+          nom, // Enregistre le nom du client.
+          tel, // Enregistre le téléphone du client.
+          wilaya, // Enregistre la wilaya du client.
+        });
+
+        sauver(); // Sauvegarde les données dans le localStorage.
+        afficherClients(); // Met à jour l'affichage de la liste des clients.
+        remplirSelectClients(); // Met à jour le menu déroulant des clients après ajout.
+        afficherFactures(); // Rafraîchit aussi les factures visibles après l'ajout.
+        afficherStats(); // Met à jour les statistiques après ajout d'un client.
+        document.querySelector("#nom-client").value = ""; // Vide le champ du nom.
+        document.querySelector("#tel-client").value = ""; // Vide le champ du téléphone.
+        document.querySelector("#wilaya-client").value = ""; // Vide le champ de la wilaya.
+      });
+
+    document
+      .querySelector("#recherche-client")
+      .addEventListener("input", () => {
+        const recherche = document
+          .querySelector("#recherche-client")
+          .value.toLowerCase(); // Lit la valeur du champ de recherche et la convertit en minuscules.
+        const liste = document.querySelector("#liste-clients"); // Sélectionne l'élément HTML de la liste des clients.
+        liste.innerHTML = ""; // Vide le contenu précédent de la liste avant de la reconstruire.
+
+        for (const client of clients) {
+          // Parcourt chaque client du tableau clients.
+          if (
+            client.nom.toLowerCase().includes(recherche) ||
+            client.tel.includes(recherche) ||
+            client.wilaya.toLowerCase().includes(recherche)
+          ) {
+            // Vérifie si le nom, le téléphone ou la wilaya du client contient le texte recherché.
+            const li = document.createElement("li"); // Crée un élément <li> pour représenter un client.
+            const texte = document.createElement("span"); // Crée un conteneur <span> pour afficher le texte du client.
+            texte.textContent = `${client.nom} — ${client.tel} — ${client.wilaya}`; // Met le nom, téléphone et wilaya du client dans le texte.
+
+            const boutonSupprimer = document.createElement("button"); // Crée un bouton pour supprimer un client.
+            boutonSupprimer.type = "button"; // Le bouton n'enverra pas de formulaire.
+            boutonSupprimer.textContent = "Supprimer"; // Texte visible sur le bouton.
+            boutonSupprimer.addEventListener("click", () => {
+              // Ajoute un événement au clic pour supprimer le client.
+              clients = clients.filter((element) => element.id !== client.id); // Supprime le client dont l'id correspond à celui sélectionné.
+              factures = factures.filter(
+                (element) => element.clientId !== client.id,
+              ); // Supprime toutes les factures associées à ce client.
+              sauver(); // Enregistre les données mises à jour dans le stockage local.
+              afficherClients(); // Rafraîchit l'affichage de la liste après suppression.
+              remplirSelectClients(); // Met à jour le menu déroulant des clients après suppression.
+              afficherFactures(); // Met à jour les factures visibles pour le client sélectionné.
+              afficherStats(); // Met à jour les statistiques après suppression d'un client.
+            });
+
+            li.append(texte, " ", boutonSupprimer); // Ajoute le texte et le bouton dans le <li>.
+            liste.append(li); // Ajoute le <li> dans la liste HTML.
+          }
+        }
+      });
+    document
+      .querySelector("#btn-ajouter-facture")
+      .addEventListener("click", () => {
+        // Écoute le clic sur le bouton d'ajout de facture.
+        const montant = parseFloat(
+          document.querySelector("#montant-facture").value,
+        ); // Lit le montant saisi et le convertit en nombre à virgule flottante.
+        const payee = document.querySelector("#payee-facture").checked; // Lit l'état de la case à cocher pour savoir si la facture est payée.
+
+        if (!clientActif) {
+          // Vérifie si un client est sélectionné avant d'ajouter une facture.
+          alert("Veuillez sélectionner un client pour ajouter une facture."); // Alerte si aucun client n'est sélectionné.
+          return; // Arrête l'exécution si aucun client n'est actif.
+        }
+
+        if (isNaN(montant) || montant <= 0) {
+          // Vérifie que le montant est un nombre positif.
+          alert("Veuillez entrer un montant valide pour la facture."); // Alerte si le montant est invalide.
+          return; // Arrête l'exécution si le montant est incorrect.
+        }
+
+        const dernierId = factures.length
+          ? Math.max(...factures.map((facture) => facture.id))
+          : 0; // Détermine le plus grand identifiant existant pour continuer la numérotation.
+
+        factures.push({
+          // Ajoute une nouvelle facture dans le tableau factures.
+          id: dernierId + 1, // Utilise un numéro séquentiel pour garder des IDs lisibles.
+          clientId: parseInt(clientActif), // Associe la facture au client actuellement sélectionné.
+          montant, // Enregistre le montant de la facture.
+          payee, // Enregistre l'état payé/non payé de la facture.
+        });
+
+        sauver(); // Sauvegarde les données dans le localStorage.
+        afficherFactures(); // Met à jour l'affichage des factures pour le client sélectionné.
+        afficherStats(); // Met à jour les statistiques après ajout d'une facture.
+        document.querySelector("#montant-facture").value = ""; // Vide le champ du montant après ajout.
+        document.querySelector("#payee-facture").checked = false; // Réinitialise la case à cocher après ajout.
+      });
+  </script>
+  <!-- Ferme le bloc JavaScript. -->
+</html>
+<!-- Ferme la page HTML. -->
